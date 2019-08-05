@@ -1,7 +1,17 @@
 <template>
 		<div class="movie_body">
 			<ul>
-				<li>
+				<li v-for="(item, index) in comingList" :key="index">
+					<div class="pic_show" ><img :src="item.img | setWH('128.180')"></div>
+					<div class="info_list">
+						<h2>{{item.nm}}</h2>
+						<p>{{item.wish}}人想看</p>
+						<p>主演：{{item.star}}</p>
+						<p>{{item.showInfo}}</p>
+					</div>
+					<div class="btn_pre">预售</div>
+				</li>
+				<!-- <li>
 					<div class="pic_show" ><img src="/images/1.jpg"></div>
 					<div class="info_list">
 						<h2>天山童姥</h2>
@@ -10,14 +20,27 @@
 						<p>2018/01/20上映</p>
 					</div>
 					<div class="btn_pre">预售</div>
-				</li>
+				</li> -->
 			</ul>
 	</div>
 </template>
 
 <script>
 export default {
-  name: 'CommingSoon'
+	name: 'CommingSoon',
+	data(){
+		return {
+			comingList:[]
+		}
+	},
+  mounted(){
+		this.$axios.get('/api/movieComingList?cityId=10').then((res)=>{
+			var msg = res.data.msg;
+			if(msg === 'ok'){
+				this.comingList = res.data.data.comingList
+			}
+		})
+	}
 }
 </script>
 

@@ -1,23 +1,46 @@
 <template>
 	<div class="movie_body" ref="movie_body">
 		<ul>
-			<li>
-				<div class="pic_show"><img src="/images/1.jpg"></div>
-				<div class="info_list">
-					<h2>蜘蛛侠：英雄远征 （Spider-Man: Far From Home）</h2>
-					<p>导演：乔·沃茨</p>
-					<p>主演：汤姆·赫兰德,杰克·吉伦哈尔,塞缪尔·杰克逊,赞达亚·科尔曼,玛丽莎·托梅,迈克尔·基顿,雅各布·巴特朗</p>
-					<p>类型：动作,冒险,科幻</p>
-				</div>
-				<div class="btn_mall">购票</div>
-			</li>
+            <li v-for="(item, index) in movieList" :key="index">
+                <div class="pic_show"><img :src="item.img | setWH('128.180')"></div>
+                <div class="info_list">
+                    <h2>{{item.nm}}</h2>
+                    <p>观众评：<span class="grade">{{item.sc}}</span></p>
+                    <p>主演：{{item.star}}</p>
+                    <p>{{item.showInfo}}</p>
+                </div>
+                <div class="btn_mall">购票</div>
+            </li>
+			<!-- <li>
+                <div class="pic_show"><img src="/images/1.jpg"></div>
+                <div class="info_list">
+                    <h2>蜘蛛侠：英雄远征 （Spider-Man: Far From Home）</h2>
+                    <p>观众评：9.3</p>
+                    <p>主演：汤姆·赫兰德,杰克·吉伦哈尔,塞缪尔·杰克逊,赞达亚·科尔曼,玛丽莎·托梅,迈克尔·基顿,雅各布·巴特朗</p>
+                    <p>今天327家影院放映3536场</p>
+                </div>
+                <div class="btn_mall">购票</div>
+            </li> -->
 		</ul>
 	</div>
 </template>
 
 <script>
 export default {
-  name: 'NowPlaying'
+  name: 'NowPlaying',
+  data(){
+    return {
+        movieList:[] 
+    }
+  },
+  mounted(){
+    this.$axios.get('/api/movieOnInfoList?cityId=10').then((res)=>{
+        var msg = res.data.msg;
+        if(msg === 'ok'){
+            this.movieList = res.data.data.movieList;
+        }
+    })
+  }
 }
 </script>
 
