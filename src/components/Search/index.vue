@@ -3,20 +3,28 @@
 		<div class="search_input">
 			<div class="search_input_wrapper">
 				<i class="iconfont icon-sousuo"></i>
-				<input type="text">
+				<input type="text" v-model="message">
 			</div>
 		</div>
 		<div class="search_result">
 			<h3>电影/电视剧/综艺</h3>
 			<ul>
-				<li>
+				<li v-for="(item, index) in moviesList" :key="index">
+					<div class="img"><img :src="item.img | setWH('128.180')"></div>
+					<div class="info">
+						<p><span>{{item.nm}}</span><span>{{item.sc}}</span></p>
+						<p>导演：{{item.dir}}</p>
+						<p>主演：{{item.star}}</p>
+					</div>
+				</li>
+				<!-- <li>
 					<div class="img"><img src="/images/1.jpg"></div>
 					<div class="info">
 						<p><span>蜘蛛侠：英雄远征</span><span>8.5</span></p>
 						<p>导演：乔·沃茨</p>
 						<p>主演：汤姆·赫兰德,杰克·吉伦哈尔,塞缪尔·杰克逊,赞达亚·科尔曼,玛丽莎·托梅,迈克尔·基顿,雅各布·巴特朗</p>
 					</div>
-				</li>
+				</li> -->
 			</ul>
 		</div>
 	</div>
@@ -24,7 +32,36 @@
 
 <script>
 export default {
-  name: 'Search'
+	name: 'Search',
+	data(){
+		return{
+			message:'',
+			moviesList:[],
+			cancel:null
+		}
+	},
+	watch:{
+		message(msg){
+			// 如果存在上一次请求，则取消上一次请求
+			if(this.cancel){
+				this.cancel();
+			}
+			// 定义CancelToken，它是axios的一个属性，且是一个构造函数
+			let CancelToken = this.$axios.CancelToken;
+
+			this.$axios.get(('/api/searchList?cityId=10&kw='+msg),{
+				cancelToken: new CancelToken((c) => {
+					this.cancel = c;
+				})
+			}).then((res)=>{
+				var msg = res.data.msg;
+				var movies = res.data.data.movies;
+				if(msg && movies){
+					this.moviesList = res.data.data.movies.list;
+				}
+			})
+		}
+	}
 }
 </script>
 
