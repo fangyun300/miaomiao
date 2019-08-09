@@ -4,7 +4,7 @@
 			<div id="content">
         <ul class="movie_menu">
             <router-link tag="li" to="/movie/city" class="city_name">
-                <span>北京</span><i class="iconfont icon-xiangxia"></i>
+                <span>{{$store.state.city.nm}}</span><i class="iconfont icon-xiangxia"></i>
             </router-link>
             <router-link tag="li" to="/movie/nowplaying">正在热映</router-link>
             <router-link tag="li" to="/movie/commingsoon">即将上映</router-link>
@@ -21,11 +21,46 @@
 <script>
 import Header from '@/components/Header'
 import TabBar from '@/components/TabBar'
+import {messagebox} from '@/components/JS'
 export default {
   name: 'Movie',
-  components:{
-    Header,TabBar
-    }
+  components:{Header,TabBar},
+  mounted(){
+    
+    setTimeout(() => {
+      this.$axios.get('/api/getLocation').then((res)=>{
+              var msg = res.data.msg
+              if(msg === 'ok'){
+                  var nm = res.data.data.nm
+                  var id = res.data.data.id
+
+                  var cityId = window.localStorage.getItem('cityId')
+                  if(cityId == id) {return}
+                  messagebox({
+                      title:'定位',
+                      content:nm,
+                      cancel:'取消',
+                      ok:'切换城市',
+                      handleToOk:function(){
+                          window.localStorage.setItem('cityNm', nm)
+                          window.localStorage.setItem('cityId', id)
+                          window.location.reload()
+                      }
+                  })
+              }
+          })
+    }, 3000)
+    
+    /*messagebox({
+        title:'定位',
+        content:'上海',
+        cancel:'取消',
+        ok:'更改城市',
+        handleToOk:function(){
+            console.log(2)
+        }
+    })*/
+  }
 }
 </script>
 

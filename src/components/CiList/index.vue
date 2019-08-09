@@ -1,6 +1,8 @@
 <template>
 	<div class="cinema_body">
-        <ul>
+        <Loading v-if="isLoading"></Loading>
+        <Scroller v-else>
+            <ul>
             <li v-for="(item, index) in cinemasList" :key="index">
                 <div>
                     <span>{{item.nm}}</span>
@@ -14,7 +16,7 @@
                     <div v-for="(itemN, key, indexN) in item.tag" v-show="itemN===1" :class="key | formatClass" :key="indexN">{{key | formatCard}}</div>
                 </div>
             </li>
-			<!-- <li>
+            <!-- <li>
                 <div>
                     <span>天龙八部</span>
                     <span class="q"><span class="price">34.00</span>元起</span>
@@ -28,7 +30,8 @@
                     <div>折扣卡</div>
                 </div>
             </li> -->
-		</ul>
+        </ul>
+        </Scroller>
     </div>
 </template>
 
@@ -37,7 +40,9 @@ export default{
     name:'CiList',
     data(){
         return{
-            cinemasList:[]
+            cinemasList:[],
+            isLoading:true,
+            preCity:-1
         }
     },
     filters:{
@@ -72,11 +77,15 @@ export default{
             return ''
         }
     },
-    mounted(){
-        this.$axios.get('/api/cinemaList?cityId=10').then((res)=>{
+    activated(){
+        var cityId = this.$store.state.city.id
+        if(this.preCity === cityId) return
+        this.$axios.get('/api/cinemaList?cityId='+cityId).then((res)=>{
             var msg = res.data.msg;
             if(msg === 'ok'){
                 this.cinemasList = res.data.data.cinemas
+                this.isLoading = false
+                this.preCity = cityId
             }
         })
     }

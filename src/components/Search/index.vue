@@ -49,7 +49,8 @@ export default {
 			// 定义CancelToken，它是axios的一个属性，且是一个构造函数
 			let CancelToken = this.$axios.CancelToken;
 
-			this.$axios.get(('/api/searchList?cityId=10&kw='+msg),{
+			var cityId = this.$store.state.city.id
+			this.$axios.get(('/api/searchList?cityId='+cityId+'&kw='+msg),{
 				cancelToken: new CancelToken((c) => {
 					this.cancel = c;
 				})
